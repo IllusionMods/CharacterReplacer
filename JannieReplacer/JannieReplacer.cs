@@ -31,8 +31,8 @@ namespace JannieReplacer {
 
         [Browsable(true)]
         [Category("Settings")]
-        [DisplayName("Janitor replacement card")]        
-        [CustomSettingDraw(nameof(CardGetButton))]        
+        [DisplayName("Janitor replacement card")]
+        [CustomSettingDraw(nameof(CardGetButton))]
         public string Card { get => null; private set { CardGetButton(); } }
 
         [Category("Settings")]
@@ -76,7 +76,7 @@ namespace JannieReplacer {
                         PngFile.SkipPng(bR);
                         bR.ReadInt32();
                     }
-                    catch (EndOfStreamException) {                        
+                    catch (EndOfStreamException) {
                         return false;
                     }
                     try {
@@ -89,7 +89,7 @@ namespace JannieReplacer {
                 }
                 return false;
             }
-        }        
+        }
 
         private void Awake() {
             Enabled = new ConfigWrapper<bool>("Enabled", GUID, true);
@@ -117,7 +117,7 @@ namespace JannieReplacer {
                         __instance.chaFile.LoadFileLimited(FilePath.Value);
                         return false;
                     }
-                }                
+                }
             }
             return true;
         }
@@ -128,20 +128,15 @@ namespace JannieReplacer {
             if (_mode == 4) {
                 if (Enabled.Value) {
                     if (!FilePath.Value.IsNullOrEmpty()) {
-                        try {
-                            if (!File.Exists(FilePath.Value)) {
-                                Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");
-                            }
-                            if (!IsKoiCard(FilePath.Value)) {
-                                Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");
-                            }
+                        if (!File.Exists(FilePath.Value)) {
+                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");
                         }
-                        catch (Exception) { };
+                        else if (!IsKoiCard(FilePath.Value)) {
+                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");
+                        }
                     }
                 }
             }
-            
         }
-
     }
 }
