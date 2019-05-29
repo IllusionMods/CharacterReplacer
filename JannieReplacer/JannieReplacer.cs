@@ -9,6 +9,7 @@ using Logger = BepInEx.Logger;
 using BepInEx.Logging;
 using UniRx;
 using UnityEngine.UI;
+using System;
 
 namespace JannieReplacer {
     [BepInProcess("Koikatu")]
@@ -129,12 +130,15 @@ namespace JannieReplacer {
             if (_mode == 4) {
                 if (Enabled.Value) {
                     if (!FilePath.Value.IsNullOrEmpty()) {
-                        if (!File.Exists(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");                                                     
+                        try {
+                            if (!File.Exists(FilePath.Value)) {
+                                Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");
+                            }
+                            if (!IsKoiCard(FilePath.Value)) {
+                                Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");
+                            }
                         }
-                        if (!IsKoiCard(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");                           
-                        }
+                        catch (Exception) { };
                     }
                 }
             }
