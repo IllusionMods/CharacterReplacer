@@ -7,8 +7,6 @@ using KKAPI;
 using KKAPI.Utilities;
 using Logger = BepInEx.Logger;
 using BepInEx.Logging;
-using UniRx;
-using UnityEngine.UI;
 using System;
 
 namespace JannieReplacer {
