@@ -7,7 +7,8 @@ using KKAPI;
 using KKAPI.Utilities;
 using Logger = BepInEx.Logger;
 using BepInEx.Logging;
-
+using UniRx;
+using UnityEngine.UI;
 
 namespace JannieReplacer {
     [BepInProcess("Koikatu")]
@@ -17,7 +18,7 @@ namespace JannieReplacer {
 
         public const string GUID = "kokaiinum.janniereplacer";
         public const string Name = "Janitor Replacer";
-        public const string Version = "1.0";
+        public const string Version = "1.1";
 
 
         public const string FileExtension = ".png";
@@ -121,5 +122,24 @@ namespace JannieReplacer {
             }
             return true;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FreeHScene), "SetMainCanvasObject")]
+        public static void SetMainCanvasObjectPrefix(int _mode) {
+            if (_mode == 4) {
+                if (Enabled.Value) {
+                    if (!FilePath.Value.IsNullOrEmpty()) {
+                        if (!File.Exists(FilePath.Value)) {
+                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");                                                     
+                        }
+                        if (!IsKoiCard(FilePath.Value)) {
+                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");                           
+                        }
+                    }
+                }
+            }
+            
+        }
+
     }
 }
