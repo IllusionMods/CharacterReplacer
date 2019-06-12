@@ -11,13 +11,14 @@ using System;
 
 namespace JannieReplacer {
     [BepInProcess("Koikatu")]
+    [BepInProcess("Koikatsu Party")]
     [BepInDependency(KoikatuAPI.GUID)]
     [BepInPlugin(GUID, Name, Version)]
     public class JannieReplacer : BaseUnityPlugin {
 
         public const string GUID = "kokaiinum.janniereplacer";
         public const string Name = "Janitor Replacer";
-        public const string Version = "1.1";
+        public const string Version = "1.2";
 
 
         public const string FileExtension = ".png";
@@ -26,7 +27,7 @@ namespace JannieReplacer {
 
         [Category("Settings")]
         [DisplayName("Janitor character replacement")]
-        [Description("Enable or disable swapping the janitor's character model\nwith a character card.")]
+        [Description("Enable or disable swapping the janitor's character model\nwith a character card. \n \n!! This plugin only does anything if you have Darkness installed! !!")]
         public static ConfigWrapper<bool> Enabled { get; private set; }
 
         [Browsable(true)]
