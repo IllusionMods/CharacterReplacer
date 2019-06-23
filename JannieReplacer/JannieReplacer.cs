@@ -81,7 +81,7 @@ namespace JannieReplacer {
                         return false;
                     }
                     try {
-                        if (bR.ReadString() == "【KoiKatuChara】")
+                        if (bR.ReadString().StartsWith("【KoiKatuChara", StringComparison.OrdinalIgnoreCase))
                             return true;
                     }
                     catch (EndOfStreamException) {
