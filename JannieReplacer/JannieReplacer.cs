@@ -18,7 +18,7 @@ namespace JannieReplacer {
 
         public const string GUID = "kokaiinum.janniereplacer";
         public const string Name = "Janitor Replacer";
-        public const string Version = "1.2";
+        public const string Version = "1.3";
 
 
         public const string FileExtension = ".png";
