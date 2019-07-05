@@ -8,6 +8,7 @@ using KKAPI.Utilities;
 using Logger = BepInEx.Logger;
 using BepInEx.Logging;
 using System;
+using System.Linq;
 
 namespace JannieReplacer {
     [BepInProcess("Koikatu")]
@@ -18,7 +19,7 @@ namespace JannieReplacer {
 
         public const string GUID = "kokaiinum.janniereplacer";
         public const string Name = "Janitor Replacer";
-        public const string Version = "1.3";
+        public const string Version = "1.4";
 
 
         public const string FileExtension = ".png";
@@ -95,14 +96,18 @@ namespace JannieReplacer {
         private void Awake() {
             Enabled = new ConfigWrapper<bool>("Enabled", GUID, true);
             FilePath = new ConfigWrapper<string>(nameof(FilePath), GUID, null);
-            var harmony = HarmonyInstance.Create(GUID);
-            harmony.PatchAll(typeof(JannieReplacer));
+            // There's no reason to install this plugin on a game without Darkness, but just in case someone does so anyway,
+            // this check prevents a MissingMethodExcetpion being thrown.
+            if (typeof(ChaControl).GetProperties(AccessTools.all).Any(p => p.Name == "exType")) {
+                var harmony = HarmonyInstance.Create(GUID);
+                harmony.PatchAll(typeof(JannieReplacer));
+            }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ChaControl), "LoadPreset")]
         public static bool LoadPresetPrefix(int _exType, ChaControl __instance) {
-            if (Enabled.Value) {
+            if (Enabled.Value) {                
                 if (!FilePath.Value.IsNullOrEmpty()) {
                     if (_exType == 1) {
                         if (!File.Exists(FilePath.Value)) {
@@ -115,13 +120,13 @@ namespace JannieReplacer {
                             FilePath.Value = null;
                             return true;
                         }
-                        __instance.chaFile.LoadFileLimited(FilePath.Value);
+                        __instance.chaFile.LoadCharaFile(FilePath.Value);                        
                         return false;
                     }
                 }
             }
             return true;
-        }
+        }   
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FreeHScene), "SetMainCanvasObject")]
