@@ -111,6 +111,8 @@ namespace IllusionMods
                             case "HoneySelectCharaMale":
                                 return CardType.HoneySelectMale;
                             case "KoiKatuChara":
+                            case "KoiKatuCharaS":
+                            case "KoiKatuCharaSP":
                                 return CardType.Koikatsu;
                             case "PlayHome_Female":
                                 return CardType.PlayHomeFemale;
