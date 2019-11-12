@@ -1,147 +1,53 @@
-﻿using System.IO;
-using System.ComponentModel;
-using BepInEx;
-using Harmony;
-using UnityEngine;
+﻿using BepInEx;
+using BepInEx.Harmony;
+using HarmonyLib;
 using KKAPI;
-using KKAPI.Utilities;
-using Logger = BepInEx.Logger;
-using BepInEx.Logging;
-using System;
 using System.Linq;
 
-namespace JannieReplacer {
+namespace IllusionMods
+{
     [BepInProcess("Koikatu")]
     [BepInProcess("Koikatsu Party")]
     [BepInDependency(KoikatuAPI.GUID)]
-    [BepInPlugin(GUID, Name, Version)]
-    public class JannieReplacer : BaseUnityPlugin {
-
+    [BepInPlugin(GUID, PluginName, Version)]
+    public partial class CharacterReplacer : BaseUnityPlugin
+    {
         public const string GUID = "kokaiinum.janniereplacer";
-        public const string Name = "Janitor Replacer";
-        public const string Version = "1.4";
+        public const string PluginName = "Janitor Replacer";
+        internal const string CardName = "Janitor";
+        internal const CardType ExpectedCardType = CardType.Koikatsu;
 
-
-        public const string FileExtension = ".png";
-        public const string Filter = "Koikatu cards (*.png)|*.png|All files|*.*";
-
-
-        [Category("Settings")]
-        [DisplayName("Janitor character replacement")]
-        [Description("Enable or disable swapping the janitor's character model\nwith a character card. \n \n!! This plugin only does anything if you have Darkness installed! !!")]
-        public static ConfigWrapper<bool> Enabled { get; private set; }
-
-        [Browsable(true)]
-        [Category("Settings")]
-        [DisplayName("Janitor replacement card")]
-        [CustomSettingDraw(nameof(CardGetButton))]
-        public string Card { get => null; private set { CardGetButton(); } }
-
-        [Category("Settings")]
-        [DisplayName("Replacement card location")]
-        [Advanced(true)]
-        public static ConfigWrapper<string> FilePath { get; private set; }
-
-
-        private void CardGetButton() {
-            if (GUILayout.Button("Browse for Janitor Replacement", GUILayout.ExpandWidth(true))) {
-                GetCard();
-            }
-        }
-
-        private void GetCard() {
-            OpenFileDialog.Show(path => OnCardAccept(path), "Select replacement card", GetDir(), Filter, FileExtension, OpenFileDialog.OpenSaveFileDialgueFlags.OFN_FILEMUSTEXIST);
-        }
-
-        private void OnCardAccept(string[] path) {
-            if (path.IsNullOrEmpty()) return;
-            if (IsKoiCard(path[0])) {
-                FilePath.Value = path[0];
-            }
-            else {
-                Logger.Log(LogLevel.Message, "Error! Not a card?");
-            }
-        }
-
-        private string GetDir() {
-            if (FilePath.Value.IsNullOrEmpty()) {
-                return Path.Combine(Paths.GameRootPath, "userdata\\chara");
-            }
-            else return Path.GetDirectoryName(FilePath.Value);
-        }
-
-        private static bool IsKoiCard(string path) {
-            if (path.IsNullOrEmpty()) return false;
-            using (var fS = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                using (var bR = new BinaryReader(fS)) {
-                    try {
-                        PngFile.SkipPng(bR);
-                        bR.ReadInt32();
-                    }
-                    catch (EndOfStreamException) {
-                        return false;
-                    }
-                    try {
-                        if (bR.ReadString().StartsWith("【KoiKatuChara", StringComparison.OrdinalIgnoreCase))
-                            return true;
-                    }
-                    catch (EndOfStreamException) {
-                        return false;
-                    }
-                }
-                return false;
-            }
-        }
-
-        private void Awake() {
-            Enabled = new ConfigWrapper<bool>("Enabled", GUID, true);
-            FilePath = new ConfigWrapper<string>(nameof(FilePath), GUID, null);
+        internal void Main()
+        {
             // There's no reason to install this plugin on a game without Darkness, but just in case someone does so anyway,
             // this check prevents a MissingMethodExcetpion being thrown.
-            if (typeof(ChaControl).GetProperties(AccessTools.all).Any(p => p.Name == "exType")) {
-                var harmony = HarmonyInstance.Create(GUID);
-                harmony.PatchAll(typeof(JannieReplacer));
-            }
+            if (typeof(ChaControl).GetProperties(AccessTools.all).Any(p => p.Name == "exType"))
+                HarmonyWrapper.PatchAll(typeof(Hooks));
         }
+        internal static class Hooks
+        {
+            /// <summary>
+            /// On loading the Janitor preset character (exType == 1) load the specified replacement card if any.
+            /// </summary>
+            [HarmonyPrefix, HarmonyPatch(typeof(ChaControl), "LoadPreset")]
+            public static bool LoadPresetPrefix(int _exType, ChaControl __instance)
+            {
+                if (_exType != 1) return true;
+                if (!VerifyCard()) return true;
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(ChaControl), "LoadPreset")]
-        public static bool LoadPresetPrefix(int _exType, ChaControl __instance) {
-            if (Enabled.Value) {                
-                if (!FilePath.Value.IsNullOrEmpty()) {
-                    if (_exType == 1) {
-                        if (!File.Exists(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. Loading default instead.");
-                            FilePath.Value = null;
-                            return true;
-                        }
-                        if (!IsKoiCard(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. Loading default instead.");
-                            FilePath.Value = null;
-                            return true;
-                        }
-                        __instance.chaFile.LoadCharaFile(FilePath.Value);                        
-                        return false;
-                    }
-                }
+                Logger.LogDebug($"Replacing {CardName} with card: {CardPath.Value}");
+                __instance.chaFile.LoadCharaFile(CardPath.Value);
+                return false;
             }
-            return true;
-        }   
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FreeHScene), "SetMainCanvasObject")]
-        public static void SetMainCanvasObjectPrefix(int _mode) {
-            if (_mode == 4) {
-                if (Enabled.Value) {
-                    if (!FilePath.Value.IsNullOrEmpty()) {
-                        if (!File.Exists(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be missing. The default janitor will be loaded unless you change it.");
-                        }
-                        else if (!IsKoiCard(FilePath.Value)) {
-                            Logger.Log(LogLevel.Message, $"The replacement card at \n{FilePath.Value}\nseems to be invalid. The default janitor will be loaded unless you change it.");
-                        }
-                    }
-                }
+            /// <summary>
+            /// Verify the card is still valid on switching to Darkness H mode
+            /// </summary>
+            [HarmonyPrefix, HarmonyPatch(typeof(FreeHScene), "SetMainCanvasObject")]
+            public static void SetMainCanvasObjectPrefix(int _mode)
+            {
+                if (_mode == 4)
+                    VerifyCard();
             }
         }
     }
