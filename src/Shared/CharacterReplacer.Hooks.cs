@@ -9,6 +9,9 @@ namespace IllusionMods
     {
         internal static partial class Hooks
         {
+            /// <summary>
+            /// Verify the card is still valid and perform replacement
+            /// </summary>
             [HarmonyPrefix, HarmonyPatch(typeof(ChaFileControl), nameof(ChaFileControl.LoadFromAssetBundle))]
             internal static bool LoadFromAssetBundle(ChaFileControl __instance, string assetName)
             {

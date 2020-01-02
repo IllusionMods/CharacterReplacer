@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Harmony;
-using HarmonyLib;
 using KKAPI;
 
 namespace IllusionMods
@@ -16,14 +15,5 @@ namespace IllusionMods
         internal const CardType ExpectedCardType = CardType.AIGirl;
 
         internal void Main() => HarmonyWrapper.PatchAll(typeof(Hooks));
-
-        internal static partial class Hooks
-        {
-            /// <summary>
-            /// Verify the card is still valid on game load screen
-            /// </summary>
-            [HarmonyPrefix, HarmonyPatch(typeof(AIProject.TitleLoadScene), "Start")]
-            internal static void TitleLoadSceneStart() => VerifyCard(ReplacementCardType.Other);
-        }
     }
 }
