@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CharacterReplacer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CharacterReplacer.Hooks.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConfigurationManagerAttributes.cs" />
   </ItemGroup>
 </Project>

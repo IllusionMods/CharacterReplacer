@@ -14,31 +14,51 @@ namespace IllusionMods
 {
     public partial class CharacterReplacer
     {
+        public const string GUID = "IllusionMods.CharacterReplacer";
+        public const string PluginName = "Character Replacer";
         public const string Version = "1.5";
         internal static new ManualLogSource Logger;
 
         public const string FileExtension = ".png";
         public const string Filter = "Character cards (*.png)|*.png|All files|*.*";
+        internal const string CardNameDefaultF = "Default Female";
+        internal const string CardNameDefaultM = "Default Male";
+        internal const string AssetDefaultF = "ill_Default_Female";
+        internal const string AssetDefaultM = "ill_Default_Male";
 
         public static ConfigEntry<bool> Enabled { get; private set; }
-        public static ConfigEntry<string> CardPath { get; private set; }
+        public static ConfigEntry<string> CardPathDefaultF { get; private set; }
+        public static ConfigEntry<string> CardPathDefaultM { get; private set; }
+        public static ConfigEntry<string> CardPathOther { get; private set; }
 
         internal void Awake()
         {
             Logger = base.Logger;
 
-            Enabled = Config.AddSetting("Config", "Enabled", true, new ConfigDescription($"Whether to replace the {CardName} with the selected card.", null, new ConfigurationManagerAttributes { Order = 3 }));
-            Config.AddSetting("Config", $"{CardName} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 2, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
-            CardPath = Config.AddSetting("Config", "Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 1 }));
+            Enabled = Config.AddSetting("Config", "Enabled", true, new ConfigDescription($"Whether to replace selected cards.", null, new ConfigurationManagerAttributes { Order = 10 }));
+            Config.AddSetting("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathDefaultF = Config.AddSetting("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
+            Config.AddSetting("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathDefaultM = Config.AddSetting("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
+            Config.AddSetting("Config", $"{CardNameOther} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 5, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathOther = Config.AddSetting("Config", $"{CardNameOther} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 4 }));
         }
 
         private void CardButtonDrawer(ConfigEntryBase configEntry)
         {
-            if (GUILayout.Button($"Browse for {CardName} Replacement", GUILayout.ExpandWidth(true)))
-                GetCard();
+            string text;
+            if (configEntry.Definition.Key.StartsWith(CardNameDefaultF))
+                text = CardNameDefaultF;
+            else if (configEntry.Definition.Key.StartsWith(CardNameDefaultM))
+                text = CardNameDefaultM;
+            else
+                text = CardNameOther;
+
+            if (GUILayout.Button($"Browse for {text} Replacement", GUILayout.ExpandWidth(true)))
+                GetCard(configEntry.Definition.Key);
         }
 
-        private void OnCardAccept(string[] path)
+        private void OnCardAccept(string key, string[] path)
         {
             if (path.IsNullOrEmpty()) return;
 
@@ -46,7 +66,12 @@ namespace IllusionMods
             switch (cardType)
             {
                 case ExpectedCardType:
-                    CardPath.Value = path[0];
+                    if (key.StartsWith(CardNameOther))
+                        CardPathOther.Value = path[0];
+                    else if (key.StartsWith(CardNameDefaultF))
+                        CardPathDefaultF.Value = path[0];
+                    else if (key.StartsWith(CardNameDefaultM))
+                        CardPathDefaultM.Value = path[0];
                     break;
                 case CardType.None:
                     Logger.LogMessage("Error! Not a card.");
@@ -60,24 +85,38 @@ namespace IllusionMods
             }
         }
 
-        private void GetCard() => OpenFileDialog.Show(path => OnCardAccept(path), "Select replacement card", GetDir(), Filter, FileExtension, OpenFileDialog.OpenSaveFileDialgueFlags.OFN_FILEMUSTEXIST);
-        private string GetDir() => CardPath.Value.IsNullOrEmpty() ? Path.Combine(Paths.GameRootPath, @"userdata\chara") : Path.GetDirectoryName(CardPath.Value);
+        private void GetCard(string key) => OpenFileDialog.Show(path => OnCardAccept(key, path), "Select replacement card", GetDir(), Filter, FileExtension, OpenFileDialog.OpenSaveFileDialgueFlags.OFN_FILEMUSTEXIST);
+        private string GetDir() => CardPathOther.Value.IsNullOrEmpty() ? Path.Combine(Paths.GameRootPath, @"userdata\chara") : Path.GetDirectoryName(CardPathOther.Value);
 
-        internal static bool VerifyCard()
+        internal static bool VerifyCard(ReplacementCardType replacementCardType)
         {
             if (!Enabled.Value) return false;
-            if (CardPath.Value.IsNullOrEmpty()) return false;
 
-            if (!File.Exists(CardPath.Value))
+            ConfigEntry<string> configEntry;
+            string text = "";
+            if (replacementCardType == ReplacementCardType.DefaultFemale)
+                configEntry = CardPathDefaultF;
+            else if (replacementCardType == ReplacementCardType.DefaultMale)
+                configEntry = CardPathDefaultM;
+            else if (replacementCardType == ReplacementCardType.Other)
             {
-                Logger.LogMessage($"[{PluginName}]: The replacement card at \n{CardPath.Value}\nseems to be missing. Loading default {CardName} instead.");
-                CardPath.Value = "";
+                configEntry = CardPathOther;
+                text = $" {CardNameOther}";
+            }
+            else return false;
+
+            if (configEntry.Value.IsNullOrEmpty()) return false;
+
+            if (!File.Exists(configEntry.Value))
+            {
+                Logger.LogMessage($"[{PluginName}]: The replacement card at \n{configEntry.Value}\nseems to be missing. Loading default{text} instead.");
+                configEntry.Value = "";
                 return false;
             }
-            if (DetermineCardType(CardPath.Value) != ExpectedCardType)
+            if (DetermineCardType(configEntry.Value) != ExpectedCardType)
             {
-                Logger.LogMessage($"[{PluginName}]: The replacement card at \n{CardPath.Value}\nseems to be invalid. Loading default {CardName} instead.");
-                CardPath.Value = "";
+                Logger.LogMessage($"[{PluginName}]: The replacement card at \n{configEntry.Value}\nseems to be invalid. Loading default{text} instead.");
+                configEntry.Value = "";
                 return false;
             }
 
@@ -134,5 +173,6 @@ namespace IllusionMods
         }
 
         internal enum CardType { None, Unknown, AIGirl, EmotionCreators, HoneySelectFemale, HoneySelectMale, Koikatsu, PlayHomeFemale, PlayHomeMale, PremiumResortFemale, PremiumResortMale }
+        internal enum ReplacementCardType { DefaultFemale, DefaultMale, Other }
     }
 }
