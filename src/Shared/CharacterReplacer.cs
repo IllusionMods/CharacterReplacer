@@ -35,13 +35,13 @@ namespace IllusionMods
         {
             Logger = base.Logger;
 
-            Enabled = Config.AddSetting("Config", "Enabled", true, new ConfigDescription($"Whether to replace selected cards.", null, new ConfigurationManagerAttributes { Order = 10 }));
-            Config.AddSetting("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
-            CardPathDefaultF = Config.AddSetting("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
-            Config.AddSetting("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
-            CardPathDefaultM = Config.AddSetting("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
-            Config.AddSetting("Config", $"{CardNameOther} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 5, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
-            CardPathOther = Config.AddSetting("Config", $"{CardNameOther} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 4 }));
+            Enabled = Config.Bind("Config", "Enabled", true, new ConfigDescription($"Whether to replace selected cards.", null, new ConfigurationManagerAttributes { Order = 10 }));
+            Config.Bind("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathDefaultF = Config.Bind("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
+            Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
+            Config.Bind("Config", $"{CardNameOther} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 5, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            CardPathOther = Config.Bind("Config", $"{CardNameOther} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 4 }));
         }
 
         private void CardButtonDrawer(ConfigEntryBase configEntry)
