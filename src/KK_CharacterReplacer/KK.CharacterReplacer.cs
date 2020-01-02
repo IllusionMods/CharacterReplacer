@@ -5,7 +5,9 @@ using KKAPI;
 namespace IllusionMods
 {
     [BepInProcess("Koikatu")]
+    [BepInProcess("KoikatuVR")]
     [BepInProcess("Koikatsu Party")]
+    [BepInProcess("Koikatsu Party VR")]
     [BepInDependency(KoikatuAPI.GUID)]
     [BepInIncompatibility("kokaiinum.janniereplacer")]
     [BepInPlugin(GUID, PluginName, Version)]
