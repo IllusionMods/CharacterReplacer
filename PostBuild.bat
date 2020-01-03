@@ -5,3 +5,6 @@ IF "%2" == "KK" (
 IF "%2" == "AI" (
 	IF EXIST "D:\Illusion\AI-Syoujyo\" XCOPY /y "%1" "D:\Illusion\AI-Syoujyo\BepInEx\plugins\"
 	)
+IF "%2" == "EC" (
+	IF EXIST "D:\Illusion\EmotionCreators\" XCOPY /y "%1" "D:\Illusion\EmotionCreators\BepInEx\plugins\"
+	)

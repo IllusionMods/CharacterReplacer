@@ -29,7 +29,9 @@ namespace IllusionMods
         public static ConfigEntry<bool> Enabled { get; private set; }
         public static ConfigEntry<string> CardPathDefaultF { get; private set; }
         public static ConfigEntry<string> CardPathDefaultM { get; private set; }
+#if !EC
         public static ConfigEntry<string> CardPathOther { get; private set; }
+#endif
 
         internal void Awake()
         {
@@ -40,8 +42,10 @@ namespace IllusionMods
             CardPathDefaultF = Config.Bind("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
             Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
             CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
+#if !EC
             Config.Bind("Config", $"{CardNameOther} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 5, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
             CardPathOther = Config.Bind("Config", $"{CardNameOther} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 4 }));
+#endif
         }
 
         private void CardButtonDrawer(ConfigEntryBase configEntry)
@@ -66,12 +70,14 @@ namespace IllusionMods
             switch (cardType)
             {
                 case ExpectedCardType:
-                    if (key.StartsWith(CardNameOther))
-                        CardPathOther.Value = path[0];
-                    else if (key.StartsWith(CardNameDefaultF))
+                    if (key.StartsWith(CardNameDefaultF))
                         CardPathDefaultF.Value = path[0];
                     else if (key.StartsWith(CardNameDefaultM))
                         CardPathDefaultM.Value = path[0];
+#if !EC
+                    else if (key.StartsWith(CardNameOther))
+                        CardPathOther.Value = path[0];
+#endif
                     break;
                 case CardType.None:
                     Logger.LogMessage("Error! Not a card.");
@@ -86,7 +92,7 @@ namespace IllusionMods
         }
 
         private void GetCard(string key) => OpenFileDialog.Show(path => OnCardAccept(key, path), "Select replacement card", GetDir(), Filter, FileExtension, OpenFileDialog.OpenSaveFileDialgueFlags.OFN_FILEMUSTEXIST);
-        private string GetDir() => CardPathOther.Value.IsNullOrEmpty() ? Path.Combine(Paths.GameRootPath, @"userdata\chara") : Path.GetDirectoryName(CardPathOther.Value);
+        private string GetDir() => Path.Combine(Paths.GameRootPath, @"userdata\chara");
 
         internal static bool VerifyCard(ReplacementCardType replacementCardType)
         {
@@ -98,11 +104,13 @@ namespace IllusionMods
                 configEntry = CardPathDefaultF;
             else if (replacementCardType == ReplacementCardType.DefaultMale)
                 configEntry = CardPathDefaultM;
+#if !EC
             else if (replacementCardType == ReplacementCardType.Other)
             {
                 configEntry = CardPathOther;
                 text = $" {CardNameOther}";
             }
+#endif
             else return false;
 
             if (configEntry.Value.IsNullOrEmpty()) return false;
