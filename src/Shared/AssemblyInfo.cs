@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using static IllusionMods.CharacterReplacer;
 
+[assembly: AssemblyTitle(PluginNameInternal)]
+[assembly: AssemblyProduct(PluginNameInternal)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://github.com/IllusionMods/CharacterReplacer")]
@@ -8,5 +11,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion(IllusionMods.CharacterReplacer.Version)]
-[assembly: AssemblyFileVersion(IllusionMods.CharacterReplacer.Version)]
+[assembly: AssemblyVersion(Version)]
+[assembly: AssemblyFileVersion(Version)]

@@ -9,6 +9,7 @@ namespace IllusionMods
     [BepInPlugin(GUID, PluginName, Version)]
     public partial class CharacterReplacer : BaseUnityPlugin
     {
+        public const string PluginNameInternal = "EC_CharacterReplacer";
         internal const string CardNameOther = "N/A";
         internal const string AssetOther = "N/A";
         internal const CardType ExpectedCardType = CardType.EmotionCreators;

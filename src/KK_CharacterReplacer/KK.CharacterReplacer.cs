@@ -13,6 +13,7 @@ namespace IllusionMods
     [BepInPlugin(GUID, PluginName, Version)]
     public partial class CharacterReplacer : BaseUnityPlugin
     {
+        public const string PluginNameInternal = "KK_CharacterReplacer";
         internal const string CardNameOther = "Janitor";
         internal const string AssetOther = "ill_Default_Male_Ex";
         internal const CardType ExpectedCardType = CardType.Koikatsu;
