@@ -32,7 +32,7 @@ namespace IllusionMods
 #if !EC
                 else if (assetName == AssetOther)
                 {
-                    if (!VerifyCard(ReplacementCardType.DefaultMale)) return true;
+                    if (!VerifyCard(ReplacementCardType.Other)) return true;
                     Logger.LogDebug($"Replacing {CardNameOther} with card: {CardPathOther.Value}");
                     __instance.LoadCharaFile(CardPathOther.Value);
                     return false;
