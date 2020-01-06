@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using HarmonyLib;
 using KKAPI.Utilities;
 using Shared;
 using System;
@@ -16,7 +17,7 @@ namespace IllusionMods
     {
         public const string GUID = "IllusionMods.CharacterReplacer";
         public const string PluginName = "Character Replacer";
-        public const string Version = "1.6.1";
+        public const string Version = "1.6.2";
         internal static new ManualLogSource Logger;
 
         public const string FileExtension = ".png";
@@ -29,9 +30,7 @@ namespace IllusionMods
         public static ConfigEntry<bool> Enabled { get; private set; }
         public static ConfigEntry<string> CardPathDefaultF { get; private set; }
         public static ConfigEntry<string> CardPathDefaultM { get; private set; }
-#if !EC
         public static ConfigEntry<string> CardPathOther { get; private set; }
-#endif
 
         internal void Awake()
         {
@@ -42,7 +41,22 @@ namespace IllusionMods
             CardPathDefaultF = Config.Bind("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
             Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
             CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
-#if !EC
+
+            AddOtherConfig();
+        }
+
+        /// <summary>
+        /// Only show the janitor/merchant stuff in games where it exists and in versions of KK where it exists
+        /// </summary>
+        private void AddOtherConfig()
+        {
+#if EC
+            //EC has no Merchant or Janitor
+#else
+#if KK
+            //KK Party and KK without Darkness don't have Janitor
+            if (typeof(ChaControl).GetProperty("exType", AccessTools.all) == null) return;
+#endif
             Config.Bind("Config", $"{CardNameOther} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 5, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
             CardPathOther = Config.Bind("Config", $"{CardNameOther} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 4 }));
 #endif
@@ -74,10 +88,8 @@ namespace IllusionMods
                         CardPathDefaultF.Value = path[0];
                     else if (key.StartsWith(CardNameDefaultM))
                         CardPathDefaultM.Value = path[0];
-#if !EC
-                    else if (key.StartsWith(CardNameOther))
+                    else if (key.StartsWith(CardNameOther) && CardPathOther != null)
                         CardPathOther.Value = path[0];
-#endif
                     break;
                 case CardType.None:
                     Logger.LogMessage("Error! Not a card.");
@@ -104,13 +116,11 @@ namespace IllusionMods
                 configEntry = CardPathDefaultF;
             else if (replacementCardType == ReplacementCardType.DefaultMale)
                 configEntry = CardPathDefaultM;
-#if !EC
-            else if (replacementCardType == ReplacementCardType.Other)
+            else if (replacementCardType == ReplacementCardType.Other && CardPathOther != null)
             {
                 configEntry = CardPathOther;
                 text = $" {CardNameOther}";
             }
-#endif
             else return false;
 
             if (configEntry.Value.IsNullOrEmpty()) return false;

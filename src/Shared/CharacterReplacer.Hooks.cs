@@ -29,15 +29,13 @@ namespace IllusionMods
                     __instance.LoadCharaFile(CardPathDefaultM.Value);
                     return false;
                 }
-#if !EC
-                else if (assetName == AssetOther)
+                else if (assetName == AssetOther && CardPathOther != null)
                 {
                     if (!VerifyCard(ReplacementCardType.Other)) return true;
                     Logger.LogDebug($"Replacing {CardNameOther} with card: {CardPathOther.Value}");
                     __instance.LoadCharaFile(CardPathOther.Value);
                     return false;
                 }
-#endif
 
                 return true;
             }
