@@ -7,7 +7,7 @@ using Shared;
 using System;
 using System.IO;
 using UnityEngine;
-#if AI
+#if AI || HS2
 using AIChara;
 #endif
 
@@ -50,8 +50,8 @@ namespace IllusionMods
         /// </summary>
         private void AddOtherConfig()
         {
-#if EC
-            //EC has no Merchant or Janitor
+#if EC || HS2
+            //EC, HS2 has no Merchant or Janitor
 #else
 #if KK
             //KK Party and KK without Darkness don't have Janitor

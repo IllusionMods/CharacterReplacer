@@ -11,6 +11,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "src\Shared\Shared
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EC_CharacterReplacer", "src\EC_CharacterReplacer\EC_CharacterReplacer.csproj", "{49E0C5FC-C2EB-447F-80E4-BB17E16847F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HS2_CharacterReplacer", "src\HS2_CharacterReplacer\HS2_CharacterReplacer.csproj", "{F116DD70-BB2F-4AF2-AD9C-3E24CB58EA50}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Shared\Shared.projitems*{49e0c5fc-c2eb-447f-80e4-bb17e16847f2}*SharedItemsImports = 4
@@ -35,6 +37,10 @@ Global
 		{49E0C5FC-C2EB-447F-80E4-BB17E16847F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49E0C5FC-C2EB-447F-80E4-BB17E16847F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49E0C5FC-C2EB-447F-80E4-BB17E16847F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F116DD70-BB2F-4AF2-AD9C-3E24CB58EA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F116DD70-BB2F-4AF2-AD9C-3E24CB58EA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F116DD70-BB2F-4AF2-AD9C-3E24CB58EA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F116DD70-BB2F-4AF2-AD9C-3E24CB58EA50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
