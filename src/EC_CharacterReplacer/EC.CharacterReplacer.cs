@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using BepInEx.Harmony;
 using KKAPI;
 
 namespace IllusionMods
@@ -13,7 +12,5 @@ namespace IllusionMods
         internal const string CardNameOther = "N/A";
         internal const string AssetOther = "N/A";
         internal const CardType ExpectedCardType = CardType.EmotionCreators;
-
-        internal void Main() => HarmonyWrapper.PatchAll(typeof(Hooks));
     }
 }

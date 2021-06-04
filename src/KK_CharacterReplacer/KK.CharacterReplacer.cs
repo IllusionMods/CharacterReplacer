@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using BepInEx.Harmony;
 using KKAPI;
 
 namespace IllusionMods
@@ -17,7 +16,5 @@ namespace IllusionMods
         internal const string CardNameOther = "Janitor";
         internal const string AssetOther = "ill_Default_Male_Ex";
         internal const CardType ExpectedCardType = CardType.Koikatsu;
-
-        internal void Main() => HarmonyWrapper.PatchAll(typeof(Hooks));
     }
 }

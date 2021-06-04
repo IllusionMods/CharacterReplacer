@@ -9,7 +9,7 @@ namespace IllusionMods
             /// <summary>
             /// Verify the card is still valid on switching to Darkness H mode
             /// </summary>
-            [HarmonyPrefix, HarmonyPatch(typeof(FreeHScene), "SetMainCanvasObject")]
+            [HarmonyPrefix, HarmonyPatch(typeof(FreeHScene), nameof(FreeHScene.SetMainCanvasObject))]
             public static void SetMainCanvasObjectPrefix(int _mode)
             {
                 if (_mode == 4)

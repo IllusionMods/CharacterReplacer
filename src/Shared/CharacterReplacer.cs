@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Harmony;
 using BepInEx.Logging;
 using HarmonyLib;
 using KKAPI.Utilities;
@@ -43,6 +44,7 @@ namespace IllusionMods
             CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
 
             AddOtherConfig();
+            Harmony.CreateAndPatchAll(typeof(Hooks));
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace IllusionMods
         /// </summary>
         private void AddOtherConfig()
         {
-#if EC || HS2
+#if EC || HS2 || KKS
             //EC, HS2 has no Merchant or Janitor
 #else
 #if KK
@@ -171,6 +173,8 @@ namespace IllusionMods
                             case "KoiKatuCharaS":
                             case "KoiKatuCharaSP":
                                 return CardType.Koikatsu;
+                            case "KoiKatuCharaSun":
+                                return CardType.KoikatsuSunshine;
                             case "PlayHome_Female":
                                 return CardType.PlayHomeFemale;
                             case "PlayHome_Male":
@@ -190,7 +194,7 @@ namespace IllusionMods
             }
         }
 
-        internal enum CardType { None, Unknown, AIGirl, EmotionCreators, HoneySelectFemale, HoneySelectMale, Koikatsu, PlayHomeFemale, PlayHomeMale, PremiumResortFemale, PremiumResortMale }
+        internal enum CardType { None, Unknown, AIGirl, EmotionCreators, HoneySelectFemale, HoneySelectMale, Koikatsu, PlayHomeFemale, PlayHomeMale, PremiumResortFemale, PremiumResortMale, KoikatsuSunshine }
         internal enum ReplacementCardType { DefaultFemale, DefaultMale, Other }
     }
 }
