@@ -3,7 +3,7 @@ using KKAPI;
 
 namespace IllusionMods
 {
-    [BepInProcess("KoikatsuSunshineTrial")]
+    [BepInProcess("KoikatsuSunshine")]
     [BepInDependency(KoikatuAPI.GUID)]
     [BepInPlugin(GUID, PluginName, Version)]
     public partial class CharacterReplacer : BaseUnityPlugin
