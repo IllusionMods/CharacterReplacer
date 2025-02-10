@@ -5,6 +5,7 @@ using HarmonyLib;
 using KKAPI.Utilities;
 using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 #if AI || HS2
 using AIChara;
@@ -30,16 +31,20 @@ namespace IllusionMods
         public static ConfigEntry<string> CardPathDefaultF { get; private set; }
         public static ConfigEntry<string> CardPathDefaultM { get; private set; }
         public static ConfigEntry<string> CardPathOther { get; private set; }
+        public static ConfigEntry<bool> UseLatestCardF { get; private set; }
+        public static ConfigEntry<bool> UseLatestCardM { get; private set; }
 
         internal void Awake()
         {
             Logger = base.Logger;
 
             Enabled = Config.Bind("Config", "Enabled", true, new ConfigDescription($"Whether to replace selected cards.", null, new ConfigurationManagerAttributes { Order = 10 }));
-            Config.Bind("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
+            Config.Bind("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = CardButtonDrawer }));
             CardPathDefaultF = Config.Bind("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
-            Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 7, HideDefaultButton = true, CustomDrawer = new Action<ConfigEntryBase>(CardButtonDrawer) }));
-            CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 6 }));
+            UseLatestCardF = Config.Bind("Config", "Use Latest Female Card", false, new ConfigDescription("Automatically pick the latest card as the replacement.", null, new ConfigurationManagerAttributes { Order = 7 }));
+            Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 6, HideDefaultButton = true, CustomDrawer = CardButtonDrawer }));
+            CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 5 }));
+            UseLatestCardM = Config.Bind("Config", "Use Latest Male Card", false, new ConfigDescription("Automatically pick the latest card as the replacement.", null, new ConfigurationManagerAttributes { Order = 4 }));
 
             AddOtherConfig();
             Harmony.CreateAndPatchAll(typeof(Hooks));
@@ -104,7 +109,7 @@ namespace IllusionMods
         }
 
         private void GetCard(string key) => OpenFileDialog.Show(path => OnCardAccept(key, path), "Select replacement card", GetDir(), Filter, FileExtension, OpenFileDialog.OpenSaveFileDialgueFlags.OFN_FILEMUSTEXIST);
-        private string GetDir() => Path.Combine(Paths.GameRootPath, @"userdata\chara");
+        private static string GetDir() => Path.Combine(Paths.GameRootPath, @"userdata\chara");
 
         internal static bool VerifyCard(ReplacementCardType replacementCardType)
         {
@@ -139,6 +144,30 @@ namespace IllusionMods
             }
 
             return true;
+        }
+
+        internal static void UpdateLatestCard(ReplacementCardType replacementCardType)
+        {
+            string dirType = "";
+            ConfigEntry<string> configEntry = null;
+            switch (replacementCardType)
+            {
+                case ReplacementCardType.DefaultFemale:
+                    if (!UseLatestCardF.Value) return;
+                    dirType = "female";
+                    configEntry = CardPathDefaultF;
+                    break;
+                case ReplacementCardType.DefaultMale:
+                    if (!UseLatestCardM.Value) return;
+                    dirType = "male";
+                    configEntry = CardPathDefaultM;
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(dirType) || configEntry == null) return;
+            var dir = new DirectoryInfo($"{GetDir()}/{dirType}");
+            var file = dir.GetFiles().OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault();
+            if (file != null) configEntry.Value = file.FullName;
         }
 
         internal static CardType DetermineCardType(string path)
