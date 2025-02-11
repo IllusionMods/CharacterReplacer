@@ -17,6 +17,7 @@ namespace IllusionMods
             {
                 if (assetName == AssetDefaultF)
                 {
+                    UpdateLatestCard(ReplacementCardType.DefaultFemale);
                     if (!VerifyCard(ReplacementCardType.DefaultFemale)) return true;
                     Logger.LogDebug($"Replacing {CardNameDefaultF} with card: {CardPathDefaultF.Value}");
                     __instance.LoadCharaFile(CardPathDefaultF.Value);
@@ -24,6 +25,7 @@ namespace IllusionMods
                 }
                 else if (assetName == AssetDefaultM)
                 {
+                    UpdateLatestCard(ReplacementCardType.DefaultMale);
                     if (!VerifyCard(ReplacementCardType.DefaultMale)) return true;
                     Logger.LogDebug($"Replacing {CardNameDefaultM} with card: {CardPathDefaultM.Value}");
                     __instance.LoadCharaFile(CardPathDefaultM.Value);
