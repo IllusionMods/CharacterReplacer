@@ -41,10 +41,10 @@ namespace IllusionMods
             Enabled = Config.Bind("Config", "Enabled", true, new ConfigDescription($"Whether to replace selected cards.", null, new ConfigurationManagerAttributes { Order = 10 }));
             Config.Bind("Config", $"{CardNameDefaultF} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 9, HideDefaultButton = true, CustomDrawer = CardButtonDrawer }));
             CardPathDefaultF = Config.Bind("Config", $"{CardNameDefaultF} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 8 }));
-            UseLatestCardF = Config.Bind("Config", "Use Latest Female Card", false, new ConfigDescription("Automatically pick the latest card as the replacement.", null, new ConfigurationManagerAttributes { Order = 7 }));
+            UseLatestCardF = Config.Bind("Config", "Use Latest Female Card", false, new ConfigDescription("Automatically pick the most recently saved card from the 'UserData/female' folder as the replacement.", null, new ConfigurationManagerAttributes { Order = 7 }));
             Config.Bind("Config", $"{CardNameDefaultM} Card Replacement", "", new ConfigDescription("Browse for a card.", null, new ConfigurationManagerAttributes { Order = 6, HideDefaultButton = true, CustomDrawer = CardButtonDrawer }));
             CardPathDefaultM = Config.Bind("Config", $"{CardNameDefaultM} Card Path", "", new ConfigDescription("Path of the replacement card on disk.", null, new ConfigurationManagerAttributes { Order = 5 }));
-            UseLatestCardM = Config.Bind("Config", "Use Latest Male Card", false, new ConfigDescription("Automatically pick the latest card as the replacement.", null, new ConfigurationManagerAttributes { Order = 4 }));
+            UseLatestCardM = Config.Bind("Config", "Use Latest Male Card", false, new ConfigDescription("Automatically pick the most recently saved card from the 'UserData/male' folder as the replacement.", null, new ConfigurationManagerAttributes { Order = 4 }));
 
             AddOtherConfig();
             Harmony.CreateAndPatchAll(typeof(Hooks));
