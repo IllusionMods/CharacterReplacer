@@ -17,7 +17,7 @@ namespace IllusionMods
     {
         public const string GUID = "IllusionMods.CharacterReplacer";
         public const string PluginName = "Character Replacer";
-        public const string Version = "1.6.3";
+        public const string Version = "1.7";
         internal static new ManualLogSource Logger;
 
         public const string FileExtension = ".png";
