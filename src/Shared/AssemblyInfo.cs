@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using static IllusionMods.CharacterReplacer;
 
@@ -6,7 +6,7 @@ using static IllusionMods.CharacterReplacer;
 [assembly: AssemblyProduct(PluginNameInternal)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("https://github.com/IllusionMods/CharacterReplacer")]
+[assembly: AssemblyCompany("https://gitgoon.dev/IllusionMods/CharacterReplacer")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
