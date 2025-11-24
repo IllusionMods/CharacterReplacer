@@ -13,11 +13,12 @@ using AIChara;
 
 namespace IllusionMods
 {
+    [BepInDependency(KKAPI.KoikatuAPI.GUID, KKAPI.KoikatuAPI.VersionConst)]
     public partial class CharacterReplacer
     {
         public const string GUID = "IllusionMods.CharacterReplacer";
-        public const string PluginName = "Character Replacer";
-        public const string Version = "1.7.0.1";
+        public const string PluginName = Constants.Name;
+        public const string Version = Constants.Version;
         internal static new ManualLogSource Logger;
 
         public const string FileExtension = ".png";
